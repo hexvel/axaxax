@@ -10,4 +10,4 @@ class User(Model):
     username = fields.TextField(default="Unknown")
     profile_photo = fields.TextField(null=True)
     prefix_commands = fields.TextField(default=".д")
-    prefix_scripts = fields.TextField(".скр")
+    prefix_scripts = fields.TextField(default=".скр")

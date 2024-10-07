@@ -1,9 +1,17 @@
+from tortoise import Tortoise
 from fastapi import FastAPI
 from loguru import logger
+from app.core.config import TORTOISE_ORM
+
+
+async def statup_tortoise():
+    await Tortoise.init(config=TORTOISE_ORM)
+    await Tortoise.generate_schemas()
+    logger.info("Tortoise successfully generate all models.")
 
 
 async def lifespan(app: FastAPI):
-    logger.debug("App started...")
+    await statup_tortoise()
     yield
     logger.warning("App stopped...")
 
