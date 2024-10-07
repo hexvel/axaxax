@@ -7,7 +7,7 @@ load_dotenv()
 
 class ProjectConfig:
     BASE_URL = os.getenv("BASE_URL")
-    MODEL_USER = "app.database.models.user"
+    MODEL_USER = "database.models.user"
 
 
 TORTOISE_ORM = {

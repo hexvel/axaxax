@@ -1,7 +1,13 @@
+import os
 from tortoise import Tortoise
 from fastapi import FastAPI
 from loguru import logger
-from app.core.config import TORTOISE_ORM
+from core.config import TORTOISE_ORM
+from database.models.user import User
+from services.user import UserService
+
+
+logger.disable("vkbottle")
 
 
 async def statup_tortoise():
@@ -10,8 +16,22 @@ async def statup_tortoise():
     logger.info("Tortoise successfully generate all models.")
 
 
+async def startup_users():
+    users = await User.all()
+
+    if not users:
+        logger.warning("Users list is empty.")
+        return
+
+    for user in users:
+        service = UserService(user)
+        await service.start_user_session()
+
+
 async def lifespan(app: FastAPI):
+    os.system("cls")
     await statup_tortoise()
+    await startup_users()
     yield
     logger.warning("App stopped...")
 
