@@ -7,7 +7,7 @@ from database.models.user import User
 from services.user import UserService
 
 
-logger.disable("vkbottle")
+# logger.disable("vkbottle")
 
 
 async def statup_tortoise():
@@ -33,6 +33,7 @@ async def lifespan(app: FastAPI):
     await statup_tortoise()
     await startup_users()
     yield
+    await Tortoise.close_connections()
     logger.warning("App stopped...")
 
 

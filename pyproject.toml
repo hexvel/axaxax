@@ -2,6 +2,7 @@
 name = "axaxax"
 version = "0.1.0"
 description = ""
+package-mode = false
 authors = ["Hexvel <dimaabdukarimov1234@gmail.com>"]
 readme = "README.md"
 
@@ -12,6 +13,10 @@ uvicorn = "^0.31.0"
 tortoise-orm = "^0.21.6"
 aerich = "^0.7.2"
 loguru = "^0.7.2"
+vkbottle = "^4.3.12"
 python-dotenv = "^1.0.1"
 aiomysql = "^0.2.0"
-vkbottle = "^4.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

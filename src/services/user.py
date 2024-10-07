@@ -47,7 +47,9 @@ class UserService(UserServiceBase):
             logger.error(f"Polling is not initialized for user: {self.user_id}")
             return
 
-        await self.polling.restart_user_session()
+        await self.polling.stop_user_session()
+        await self.initialize()
+        await self.polling.start_user_session()
 
     async def stop_user_session(self) -> None:
         if not self.polling:
@@ -58,16 +60,12 @@ class UserService(UserServiceBase):
 
 
 class UserPolling:
-    def __init__(self, session) -> None:
+    def __init__(self, session: Session) -> None:
         self.session = session
         self.loop = asyncio.get_event_loop()
 
     async def start_user_session(self) -> asyncio.Task:
         self.loop = asyncio.create_task(self.session.run_polling(), name=f"user")
-
-    async def restart_user_session(self) -> asyncio.Task:
-        await self.stop_user_session()
-        await self.start_user_session()
 
     async def stop_user_session(self):
         self.loop.cancel()

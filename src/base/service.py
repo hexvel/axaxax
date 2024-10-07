@@ -60,4 +60,4 @@ class UserServiceBase(ABC):
         # Инициализация фоновых задач
         # await self.initialize_background_tasks()
 
-        logger.success("User service successfully initialized")
+        logger.success("Service for user {} successfully initialized", self.user_id)
