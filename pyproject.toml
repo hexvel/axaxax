@@ -13,9 +13,10 @@ uvicorn = "^0.31.0"
 tortoise-orm = "^0.21.6"
 aerich = "^0.7.2"
 loguru = "^0.7.2"
-vkbottle = "^4.3.12"
+vkbottle = {git = "https://github.com/vkbottle/vkbottle"}
 python-dotenv = "^1.0.1"
 aiomysql = "^0.2.0"
+cryptography = "^43.0.1"
 
 [build-system]
 requires = ["poetry-core"]

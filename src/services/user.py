@@ -6,6 +6,7 @@ from actions.user import user_labeler
 from base.service import UserServiceBase
 from vkbottle import API, AiohttpClient
 from vkbottle.user import User as Session
+from vkbottle.tools import LoopWrapper
 
 from database.models.user import User
 
@@ -13,11 +14,14 @@ from database.models.user import User
 class UserService(UserServiceBase):
     def __init__(self, user: User) -> None:
         super().__init__(user)
+        self.loop_wrapper = LoopWrapper(loop=asyncio.get_event_loop())
 
     async def initialize_api(self) -> None:
         api = API(self.user.token, http_client=AiohttpClient())
-        self.session = Session(api=api, labeler=user_labeler)
-        self.polling = UserPolling(self.session)
+        self.session = Session(
+            api=api, labeler=user_labeler, loop_wrapper=self.loop_wrapper
+        )
+        self.polling = UserPolling(self.session, self.loop_wrapper)
         setattr(self.session.api, "data", self)
 
     async def initialize_managers(self) -> None:
@@ -40,32 +44,33 @@ class UserService(UserServiceBase):
             return
 
         await self.initialize()
-        await self.polling.start_user_session()
+        self.polling.start_user_session()
 
     async def restart_user_session(self) -> None:
         if not self.polling:
             logger.error(f"Polling is not initialized for user: {self.user_id}")
             return
 
-        await self.polling.stop_user_session()
+        self.polling.stop_user_session()
         await self.initialize()
-        await self.polling.start_user_session()
+        self.polling.start_user_session()
 
-    async def stop_user_session(self) -> None:
+    def stop_user_session(self) -> None:
         if not self.polling:
             logger.error(f"Polling is not initialized for user: {self.user_id}")
             return
 
-        await self.polling.stop_user_session()
+        self.polling.stop_user_session()
+        logger.warning("Session of user {} will be stopped", self.user_id)
 
 
 class UserPolling:
-    def __init__(self, session: Session) -> None:
+    def __init__(self, session: Session, loop_wrapper: LoopWrapper) -> None:
         self.session = session
-        self.loop = asyncio.get_event_loop()
+        self.loop_wrapper = loop_wrapper
 
-    async def start_user_session(self) -> asyncio.Task:
-        self.loop = asyncio.create_task(self.session.run_polling(), name=f"user")
+    def start_user_session(self) -> None:
+        self.loop_wrapper.add_task(self.session.run_polling())
 
-    async def stop_user_session(self):
-        self.loop.cancel()
+    def stop_user_session(self) -> None:
+        self.session.polling.stop = True

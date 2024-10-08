@@ -1,4 +1,5 @@
 import os
+import tracemalloc
 from tortoise import Tortoise
 from fastapi import FastAPI
 from loguru import logger
@@ -7,7 +8,8 @@ from database.models.user import User
 from services.user import UserService
 
 
-# logger.disable("vkbottle")
+tracemalloc.start()
+logger.disable("vkbottle")
 
 
 async def statup_tortoise():

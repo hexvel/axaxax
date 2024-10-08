@@ -5,4 +5,4 @@ labeler = UserLabeler()
 
 @labeler.message(text="тест")
 async def test_handler(message: Message):
-    await message.answer("хуй")
+    message.ctx_api.data.stop_user_session()
