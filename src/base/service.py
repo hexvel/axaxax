@@ -49,8 +49,6 @@ class UserServiceBase(ABC):
         pass
 
     async def initialize(self) -> None:
-        logger.debug("Initializing service for user {}", self.user_id)
-
         # Инициализация API
         await self.initialize_api()
 
@@ -60,4 +58,7 @@ class UserServiceBase(ABC):
         # Инициализация фоновых задач
         # await self.initialize_background_tasks()
 
-        logger.success("Service for user {} successfully initialized", self.user_id)
+        logger.success(
+            "Service for user {} successfully initialized",
+            self.user_id,
+        )

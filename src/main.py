@@ -4,12 +4,13 @@ from tortoise import Tortoise
 from fastapi import FastAPI
 from loguru import logger
 from core.config import TORTOISE_ORM
+from core.utils import Vars
 from database.models.user import User
 from services.user import UserService
 
 
 tracemalloc.start()
-logger.disable("vkbottle")
+# logger.disable("vkbottle")
 
 
 async def statup_tortoise():
@@ -26,8 +27,9 @@ async def startup_users():
         return
 
     for user in users:
-        service = UserService(user)
-        await service.start_user_session()
+        Vars.USERS[user.user_id] = UserService(user)
+        await Vars.USERS[user.user_id].start_user_session()
+        logger.debug("User {} started", user.user_id)
 
 
 async def lifespan(app: FastAPI):
